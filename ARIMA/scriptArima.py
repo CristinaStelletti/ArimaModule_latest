@@ -1,7 +1,5 @@
-import os
 from datetime import datetime, timedelta
 from pmdarima import auto_arima
-import pickle
 
 import configparser
 
@@ -9,11 +7,8 @@ import configparser
 config = configparser.ConfigParser()
 config.read('..\config.properties')
 
-SOURCE_TOPIC_GIUDICE = config.get('SourceTopics', 'SOURCE_TOPIC_GIUDICE')
-SOURCE_TOPIC_SEZIONE = config.get('SourceTopics', 'SOURCE_TOPIC_SEZIONE')
-
-MEDIA_MOBILE_GIUDICE = config.get('JsonFields', 'MEDIA_MOBILE_GIUDICE')
-MEDIA_MOBILE_SEZIONE = config.get('JsonFields', 'MEDIA_MOBILE_SEZIONE')
+MEDIA_MOBILE_GIUDICE = config.get('JsonFields', 'media.mobile.giudice')
+MEDIA_MOBILE_SEZIONE = config.get('JsonFields', 'media.mobile.sezione')
 
 avg = []
 
@@ -25,7 +20,6 @@ def read_medie(lista_json, key):
         key = MEDIA_MOBILE_SEZIONE
 
     avg = [elemento[key] for elemento in lista_json]
-    print(avg)
     return avg
 
 
@@ -37,9 +31,9 @@ def create_json_with_prediction(prediction, lista_json, train_size, key, materia
     for element in prediction:
         # Aggiungi 30 giorni alla data di previsione
         data_prediction = data_prediction + timedelta(days=30)
-
         # Converti la data di previsione in timestamp Unix
         data_prediction_unix = data_prediction.timestamp()
+        print(data_prediction_unix)
         try:
             if materia is not None:
                 if key == "giudice":
@@ -80,44 +74,7 @@ def create_json_with_prediction(prediction, lista_json, train_size, key, materia
     return nuova_lista_json
 
 
-def creazione_modello(filePath, lista, key):
-    # potrebbe servire per separare la creazione del modello dalla predizione
-    # salvando il modello in un file pkl
-    avg = read_medie(lista, key)
-
-    print("...Creazione del modello")
-    # AUTO-arima_Model (Scelta automatica dei parametri del modello)
-    arima_model = auto_arima(avg)
-    arima_model.summary()
-    try:
-        with open(filePath, 'wb') as file:
-            pickle.dump(arima_model, file)
-    except Exception as e:
-        print("Eccezione: {}".format(e.with_traceback()))
-
-
-def arima_predictions(filePath, key, lista, prediction_period, materia):
-    #controlla se esiste già il modello altrimenti lo crea e poi fa le predizioni
-    if not os.path.exists(filePath):
-        creazione_modello(filePath, lista, key)
-
-    try:
-        with open(filePath, 'rb') as file:
-            print(filePath)
-            arima_model = pickle.load(file)
-    except Exception as e:
-        print("Exception: {}".format(e.with_traceback()))
-
-    prediction = arima_model.predict(n_periods=prediction_period)
-    print("Calcolo completato.")
-
-    nuovo_json = create_json_with_prediction(prediction, lista, prediction_period, key, materia)
-    print("Creazione json completata.")
-
-    return nuovo_json
-
-
-def predictions(filePath, key, lista, prediction_period, materia):
+def predictions(key, lista, prediction_period, materia):
     avg = read_medie(lista, key)
 
     print("...Creazione del modello")
@@ -128,7 +85,7 @@ def predictions(filePath, key, lista, prediction_period, materia):
     prediction = arima_model.predict(n_periods=prediction_period)
     print("Calcolo completato.")
 
-    nuovo_json = create_json_with_prediction(prediction, lista, prediction_period, key, materia)
+    nuova_lista_json = create_json_with_prediction(prediction, lista, (len(lista)-1), key, materia)
     print("Creazione json completata.")
 
-    return nuovo_json
+    return nuova_lista_json
