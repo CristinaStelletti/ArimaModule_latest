@@ -12,6 +12,8 @@ MEDIA_MOBILE_SEZIONE = config.get('JsonFields', 'media.mobile.sezione')
 
 avg = []
 
+PERIODO_DI_CAMPIONAMENTO = int(config.get('PredictionParams', 'periodo.di.campionamento.giorni'))
+
 
 def read_medie(lista_json, key):
     if key == "giudice":
@@ -30,10 +32,10 @@ def create_json_with_prediction(prediction, lista_json, train_size, key, materia
 
     for element in prediction:
         # Aggiungi 30 giorni alla data di previsione
-        data_prediction = data_prediction + timedelta(days=30)
+        data_prediction = data_prediction + timedelta(days=PERIODO_DI_CAMPIONAMENTO)
         # Converti la data di previsione in timestamp Unix
         data_prediction_unix = data_prediction.timestamp()
-        print(data_prediction_unix)
+
         try:
             if materia is not None:
                 if key == "giudice":
