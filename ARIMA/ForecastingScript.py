@@ -96,8 +96,8 @@ if __name__ == '__main__':
 
     try:
         # print("Estrazione dati e filtraggio...")
-        # filtering_data_per_materia("giudice", medie_per_materia_collection, PERIODO_DI_PREDIZIONE, predizioni_collection_per_materia_giudice, "mediaMobileGiudice")
-        # filtering_data("giudice", medie_collection, PERIODO_DI_PREDIZIONE, predizioni_collection_giudice, MEDIA_MOBILE_GIUDICE)
+        filtering_data_per_materia("giudice", medie_per_materia_collection, PERIODO_DI_PREDIZIONE, predizioni_collection_per_materia_giudice, "mediaMobileGiudice")
+        filtering_data("giudice", medie_collection, PERIODO_DI_PREDIZIONE, predizioni_collection_giudice, MEDIA_MOBILE_GIUDICE)
 
         lettura_dati(predizioni_collection_giudice, "giudice", "Minimo della Pena", "Appalto")
         lettura_dati(predizioni_collection_per_materia_giudice, "giudice", "Minimo della Pena", "Appalto")
