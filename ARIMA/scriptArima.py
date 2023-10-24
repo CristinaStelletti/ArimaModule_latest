@@ -8,24 +8,19 @@ config = configparser.ConfigParser()
 config.read('..\config.properties')
 
 MEDIA_MOBILE_GIUDICE = config.get('JsonFields', 'media.mobile.giudice')
-MEDIA_MOBILE_SEZIONE = config.get('JsonFields', 'media.mobile.sezione')
 
 avg = []
 
 PERIODO_DI_CAMPIONAMENTO = int(config.get('PredictionParams', 'periodo.di.campionamento.giorni'))
 
 
-def read_medie(lista_json, key):
-    if key == "giudice":
-        key = MEDIA_MOBILE_GIUDICE
-    else:
-        key = MEDIA_MOBILE_SEZIONE
+def read_medie(lista_json):
 
-    avg = [elemento[key] for elemento in lista_json]
+    avg = [elemento[MEDIA_MOBILE_GIUDICE] for elemento in lista_json]
     return avg
 
 
-def create_json_with_prediction(prediction, lista_json, train_size, key, materia):
+def create_json_with_prediction(prediction, lista_json, train_size, materia):
     nuova_lista_json = []
     data_prediction_unix = lista_json[train_size]["data_fine"]
     data_prediction = datetime.utcfromtimestamp(int(data_prediction_unix))
@@ -38,35 +33,18 @@ def create_json_with_prediction(prediction, lista_json, train_size, key, materia
 
         try:
             if materia is not None:
-                if key == "giudice":
-                    json_data = {
+                json_data = {
                         "giudice": lista_json[0]["giudice"],
                         "materia": materia,
                         "mediaMobileGiudice": element,
                         "data_fine": data_prediction_unix  # Aggiorna con il timestamp Unix
-                    }
-                else:
-                    json_data = {
-                        "ufficio": lista_json[0]["ufficio"],
-                        "materia": materia,
-                        "sezione": lista_json[0]["sezione"],
-                        "mediaMobileSezione": element,
-                        "data_fine": data_prediction_unix  # Aggiorna con il timestamp Unix
-                    }
+                }
             else:
-                if key == "giudice":
-                    json_data = {
+                json_data = {
                         "giudice": lista_json[0]["giudice"],
                         "mediaMobileGiudice": element,
                         "data_fine": data_prediction_unix  # Aggiorna con il timestamp Unix
-                    }
-                else:
-                    json_data = {
-                        "ufficio": lista_json[0]["ufficio"],
-                        "sezione": lista_json[0]["sezione"],
-                        "mediaMobileSezione": element,
-                        "data_fine": data_prediction_unix  # Aggiorna con il timestamp Unix
-                    }
+                }
 
             nuova_lista_json.append(json_data)
 
@@ -77,7 +55,7 @@ def create_json_with_prediction(prediction, lista_json, train_size, key, materia
 
 
 def predictions(key, lista, prediction_period, materia):
-    avg = read_medie(lista, key)
+    avg = read_medie(lista)
 
     print("...Creazione del modello")
     # AUTO-arima_Model (Scelta automatica dei parametri del modello)
@@ -87,7 +65,7 @@ def predictions(key, lista, prediction_period, materia):
     prediction = arima_model.predict(n_periods=prediction_period)
     print("Calcolo completato.")
 
-    nuova_lista_json = create_json_with_prediction(prediction, lista, (len(lista)-1), key, materia)
+    nuova_lista_json = create_json_with_prediction(prediction, lista, (len(lista)-1), materia)
     print("Creazione json completata.")
 
     return nuova_lista_json

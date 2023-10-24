@@ -1,5 +1,4 @@
 from pymongo import *
-import os
 import configparser
 
 # Leggi il file di configurazione
@@ -10,18 +9,13 @@ CLIENT = config.get('MongoDB', 'mongo.client')
 DB_NAME = config.get('MongoDB', 'db.name')
 
 MEDIA_MOBILE_GIUDICE = config.get('JsonFields', 'media.mobile.giudice')
-MEDIA_MOBILE_SEZIONE = config.get('JsonFields', 'media.mobile.sezione')
 
 MEDIE_COLLECTION_NAME = config.get('MongoDB', 'medie.collection.name')
 MEDIE_PER_MATERIA_COLLECTION_NAME = config.get('MongoDB', 'medie.per.materia.collection')
 PREDIZIONI_COLLECTION_GIUDICE_NAME = config.get('MongoDB', 'predizioni.giudici.collection')
-PREDIZIONI_COLLECTION_SEZIONI_NAME = config.get('MongoDB', 'predizioni.sezioni.collection')
 PREDIZIONI_COLLECTION_PER_MATERIA_GIUDICE = config.get('MongoDB', 'predizioni.per.materia.giudici.collection')
-PREDIZIONI_COLLECTION_PER_MATERIA_SEZIONE = config.get('MongoDB', 'predizioni.per.materia.sezioni.collection')
 
 PERIODO_DI_PREDIZIONE = int(config.get('PredictionParams', 'prediction.period.mesi'))
-
-keys = ['giudice', 'sezione']
 
 
 def computing(dataReceived, key, periodoDiPredizione, materia, predictionCollection, campo):
@@ -81,7 +75,8 @@ def filtering_data_per_materia(key, collezione, periodoDiPredizione, predictionC
 
 
 def lettura_dati(predizioniCollection, key, denominazione, materia):
-    # query = {key: denominazione, "materia": materia}
+
+    #query = {key: denominazione, "materia": materia}
 
     cursor = predizioniCollection.find()
     docs = list(cursor)
@@ -97,21 +92,15 @@ if __name__ == '__main__':
     medie_per_materia_collection = db[MEDIE_PER_MATERIA_COLLECTION_NAME]
     medie_collection = db[MEDIE_COLLECTION_NAME]
     predizioni_collection_giudice = db[PREDIZIONI_COLLECTION_GIUDICE_NAME]
-    predizioni_collection_sezione = db[PREDIZIONI_COLLECTION_SEZIONI_NAME]
     predizioni_collection_per_materia_giudice = db[PREDIZIONI_COLLECTION_PER_MATERIA_GIUDICE]
-    predizioni_collection_per_materia_sezione = db[PREDIZIONI_COLLECTION_PER_MATERIA_SEZIONE]
 
     try:
         # print("Estrazione dati e filtraggio...")
-        # filtering_data_per_materia(keys[0], medie_per_materia_collection, PERIODO_DI_PREDIZIONE, predizioni_collection_per_materia_giudice, "mediaMobileGiudice")
-        # filtering_data_per_materia(keys[1], medie_per_materia_collection, PERIODO_DI_PREDIZIONE, predizioni_collection_per_materia_sezione, "mediaMobileSezione")
-        # filtering_data(keys[0], medie_collection, PERIODO_DI_PREDIZIONE, predizioni_collection_giudice, MEDIA_MOBILE_GIUDICE)
-        # filtering_data(keys[1], medie_collection, PERIODO_DI_PREDIZIONE, predizioni_collection_sezione, MEDIA_MOBILE_SEZIONE)
+        # filtering_data_per_materia("giudice", medie_per_materia_collection, PERIODO_DI_PREDIZIONE, predizioni_collection_per_materia_giudice, "mediaMobileGiudice")
+        # filtering_data("giudice", medie_collection, PERIODO_DI_PREDIZIONE, predizioni_collection_giudice, MEDIA_MOBILE_GIUDICE)
 
-        lettura_dati(predizioni_collection_giudice, keys[0], "Minimo della Pena", "Appalto")
-        lettura_dati(predizioni_collection_sezione, keys[1], "01", "Responsabilita giudiziale")
-        lettura_dati(predizioni_collection_per_materia_giudice, keys[0], "Minimo della Pena", "Appalto")
-        lettura_dati(predizioni_collection_per_materia_sezione, keys[1], "01", "Responsabilita giudiziale")
+        lettura_dati(predizioni_collection_giudice, "giudice", "Minimo della Pena", "Appalto")
+        lettura_dati(predizioni_collection_per_materia_giudice, "giudice", "Minimo della Pena", "Appalto")
 
     except Exception as exc:
         print("Exception traceback: {}".format(exc.with_traceback()))
