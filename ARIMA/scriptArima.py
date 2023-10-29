@@ -1,16 +1,13 @@
 from datetime import datetime, timedelta
-
-import numpy as np
-from matplotlib import pyplot as plt
 from pmdarima import auto_arima
-import statsmodels.api as sm
 import os
 
 import configparser
 
 # Leggi il file di configurazione
 config = configparser.ConfigParser()
-config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.properties')
+config_path = os.environ.get("FILE_PATH")
+#config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.properties')
 config.read(config_path)
 
 MEDIA_MOBILE_GIUDICE = config.get('JsonFields', 'media.mobile.giudice')

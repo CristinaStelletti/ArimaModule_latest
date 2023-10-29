@@ -4,8 +4,8 @@ import os
 
 # Leggi il file di configurazione
 config = configparser.ConfigParser()
-#config_path = os.environ.get("VOLUME_PATH")
-config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.properties')
+config_path = os.environ.get("FILE_PATH")
+#config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.properties')
 config.read(config_path)
 print(config_path)
 
