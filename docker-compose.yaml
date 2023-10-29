@@ -1,0 +1,8 @@
+version: '3'
+services:
+  arima:
+    image: arima_image
+    volumes:
+      - ./config.properties:/ArimaModule_latest/config/config.properties
+    environment:
+      - FILE_PATH = /ArimaModule_latest/config/config.properties
