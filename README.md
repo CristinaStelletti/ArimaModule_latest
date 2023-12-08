@@ -5,6 +5,5 @@ i dati sui quali addestrare il modello e calcolare le predizioni che verranno sa
 
 ### Testing 
 
-Per poter confrontare i valori delle predizioni e, solo nel caso si abbia un congruo numero di
-osservazioni è possibile far addestrare il modello rimuovendo dal train i dati che serviranno 
-come test set.
+Per poter confrontare i valori delle predizioni con quelli reali (a disposizione), solo nel caso si abbia un congruo numero di
+osservazioni, è possibile addestrare il modello rimuovendo dal train set i dati che serviranno per il test (test set).
